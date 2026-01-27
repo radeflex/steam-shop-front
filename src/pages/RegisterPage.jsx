@@ -1,34 +1,35 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { useAuth } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function RegisterPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errors, setErrors] = useState({}); // теперь объект для полей
+  const [errors, setErrors] = useState({});
+
   const navigate = useNavigate();
-  const { login } = useAuth();
 
   const submit = async (e) => {
     e.preventDefault();
-    setErrors({}); // сбрасываем ошибки перед отправкой
+    setErrors({});
 
     try {
       await api.post("/register", { username, email, password });
 
-      // Если бэкенд выставил токен в cookie, считаем что залогинен
-      login();            
-      navigate("/products"); // сразу на продукты или профиль
+      toast.info("📩 Ссылка для подтверждения email отправлена на вашу почту", {
+        autoClose: 3000,
+      });
+
+      setTimeout(() => {
+        navigate("/products");
+      }, 3100);
     } catch (err) {
       console.error(err);
 
-      // Если пришёл объект ошибок с полями
       if (err.response?.data?.errors) {
         setErrors(err.response.data.errors);
-      } else if (err.response?.status === 409) {
-        setErrors({ username: "Пользователь с таким именем или email уже существует" });
       } else {
         setErrors({ general: "Ошибка при регистрации" });
       }
@@ -48,7 +49,6 @@ export default function RegisterPage() {
               )}
 
               <form onSubmit={submit}>
-                {/* Username */}
                 <div className="mb-3">
                   <label className="form-label">Username</label>
                   <input
@@ -56,7 +56,6 @@ export default function RegisterPage() {
                     className={`form-control ${errors.username ? "is-invalid" : ""}`}
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter username"
                     required
                     minLength={3}
                     maxLength={32}
@@ -66,7 +65,6 @@ export default function RegisterPage() {
                   )}
                 </div>
 
-                {/* Email */}
                 <div className="mb-3">
                   <label className="form-label">Email</label>
                   <input
@@ -74,7 +72,6 @@ export default function RegisterPage() {
                     className={`form-control ${errors.email ? "is-invalid" : ""}`}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter email"
                     required
                   />
                   {errors.email && (
@@ -82,7 +79,6 @@ export default function RegisterPage() {
                   )}
                 </div>
 
-                {/* Password */}
                 <div className="mb-3">
                   <label className="form-label">Password</label>
                   <input
@@ -90,7 +86,6 @@ export default function RegisterPage() {
                     className={`form-control ${errors.password ? "is-invalid" : ""}`}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Enter password"
                     required
                     minLength={8}
                   />
@@ -103,6 +98,7 @@ export default function RegisterPage() {
                   Sign Up
                 </button>
               </form>
+
             </div>
           </div>
         </div>

@@ -1,17 +1,39 @@
 // UserPage.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import { getCurrentUser, getPurchaseHistory } from "../api/user.api";
 import { getImageUrl } from "../api/file.api";
+import api from "../api/axios";
 
 export default function CurrentUserPage() {
   const [user, setUser] = useState(null);
   const [history, setHistory] = useState(null);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     getCurrentUser().then(r => setUser(r.data));
     getPurchaseHistory({ page: 0, size: 10 }).then(r => setHistory(r.data));
   }, []);
+
+  const sendConfirmationEmail = async () => {
+    if (sending) return;
+
+    try {
+      setSending(true);
+      await api.post("/send-email-confirmation");
+
+      toast.info("📩 Ссылка для подтверждения email отправлена на вашу почту", {
+        autoClose: 3000,
+      });
+    } catch (err) {
+      toast.error("❌ Не удалось отправить письмо. Попробуйте позже.");
+      console.error(err);
+    } finally {
+      setSending(false);
+    }
+  };
 
   if (!user) return <p className="mt-3">Loading user...</p>;
 
@@ -35,14 +57,32 @@ export default function CurrentUserPage() {
               }}
             />
           )}
+
           <div className="flex-grow-1">
             <p><strong>ID:</strong> {user.id}</p>
             <p><strong>Username:</strong> {user.username}</p>
+
+            <p>
+              <strong>Email:</strong> {user.email}{" "}
+              {user.confirmed ? (
+                <span className="badge bg-success ms-2">✔ подтверждён</span>
+              ) : (
+                <button
+                  className="btn btn-sm btn-outline-warning mb-2"
+                  onClick={sendConfirmationEmail}
+                  disabled={sending}
+                >
+                  {sending ? "Отправка..." : "Подтвердить"}
+                </button>
+              )}
+            </p>
             <p><strong>Balance:</strong> {user.balance} ₽</p>
             <p><strong>Points:</strong> {user.points}</p>
-            <p><strong>Joined at:</strong> {new Date(user.createdAt).toLocaleString()}</p>
+            <p>
+              <strong>Joined at:</strong>{" "}
+              {new Date(user.createdAt).toLocaleString()}
+            </p>
 
-            {/* Кнопка редактирования */}
             <Link to="/profile/edit" className="btn btn-primary mt-2">
               Edit Profile
             </Link>
@@ -52,6 +92,7 @@ export default function CurrentUserPage() {
 
       {/* Purchase history */}
       <h4>Purchase History</h4>
+
       {!history ? (
         <p>Loading purchase history...</p>
       ) : history.content.length === 0 ? (

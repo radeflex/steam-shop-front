@@ -1,5 +1,6 @@
 import { Routes, Route, Navigate, Outlet } from "react-router-dom";
 import AppNavbar from "./components/AppNavbar";
+import { ToastContainer } from "react-toastify";
 import AdminLayout from "./layouts/AdminLayout";
 
 import LoginPage from "./pages/LoginPage";
@@ -8,6 +9,7 @@ import ProductsPage from "./pages/ProductsPage";
 import CartPage from "./pages/CartPage";
 import CurrentUserPage from "./pages/CurrentUserPage";
 import UserEditPage from "./pages/UserEditPage";
+import ConfirmEmailPage from "./pages/ConfirmEmailPage";
 
 // Admin pages
 import AdminProductsPage from "./pages/admin/ProductsPage";
@@ -18,6 +20,7 @@ import AdminRoute from "./components/admin/AdminRoute";
 
 export default function App() {
   return (
+    <>
     <Routes>
       {/* Public layout */}
       <Route element={<><AppNavbar /><Outlet /></>}>
@@ -46,6 +49,16 @@ export default function App() {
           <Route index element={<Navigate to="products" />} />
         </Route>
       </Route>
+      <Route path="/confirm-email" element={<ConfirmEmailPage />} />
     </Routes>
+    <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover={false}
+        draggable={false}
+      />
+    </>
   );
 }
