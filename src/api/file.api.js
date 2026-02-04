@@ -1,2 +1,3 @@
-export const getImageUrl = uuid =>
-  `http://localhost:7777/files/${uuid}`;
+import api from "./axios"
+
+export const getImageUrl = uuid => `${api.defaults.baseURL}/files/${uuid}`;

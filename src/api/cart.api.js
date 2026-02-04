@@ -11,3 +11,6 @@ export const updateQuantity = (id, quantity) =>
 
 export const removeFromCart = id =>
   api.delete(`/cart/${id}`);
+
+export const purchase = (data) =>
+  api.post("/purchase", data);

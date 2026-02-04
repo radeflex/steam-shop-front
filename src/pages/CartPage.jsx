@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import {
   getCart,
   updateQuantity,
-  removeFromCart
+  removeFromCart,
+  purchase
 } from "../api/cart.api";
-import { purchaseProducts } from "../api/product.api";
 import CartCard from "../components/CartCard";
 
 export default function CartPage() {
@@ -43,16 +43,20 @@ export default function CartPage() {
     0
   );
 
-  const purchase = async () => {
-    const orders = items.map(i => ({
-      productId: i.productId,
-      quantity: i.quantity
-    }));
+const purchaseProducts = async () => {
+  const products = {};
 
-    await purchaseProducts(orders);
-    alert("Purchase completed successfully");
-    loadCart();
+  items.forEach(i => {
+    products[i.productId] = i.quantity;
+  });
+  const res = await purchase({ products });
+  if (res.data?.url) {
+    window.location.href = res.data.url;
+    return;
+  }
+  loadCart();
   };
+
 
   return (
     <div className="container mt-4">
@@ -88,7 +92,7 @@ export default function CartPage() {
               <button
                 className="btn btn-success w-100 mt-3"
                 disabled={items.length === 0}
-                onClick={purchase}
+                onClick={purchaseProducts}
               >
                 Checkout
               </button>
