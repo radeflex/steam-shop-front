@@ -2,7 +2,7 @@ import { useState } from "react";
 import { toast } from "react-toastify";
 
 import { getImageUrl } from "../api/file.api";
-import { purchase, purchaseViaBalance } from "../api/cart.api";
+import { purchaseViaCard, purchaseViaBalance } from "../api/cart.api";
 import { useCart } from "../context/CartContext";
 
 export default function ProductCard({ product }) {
@@ -23,17 +23,11 @@ export default function ProductCard({ product }) {
     try {
       setBuyLoading(true);
 
-      const payload = {
-        products: {
-          [product.id]: 1,
-        },
-      };
-
       // выбор эндпоинта
       const res =
         type === "BALANCE"
-          ? await purchaseViaBalance(payload)
-          : await purchase(payload);
+          ? await purchaseViaBalance(product.id)
+          : await purchaseViaCard(product.id);
 
       setShowPaymentModal(false);
 

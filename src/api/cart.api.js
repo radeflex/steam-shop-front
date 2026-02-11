@@ -12,8 +12,14 @@ export const updateQuantity = (id, quantity) =>
 export const removeFromCart = id =>
   api.delete(`/cart/${id}`);
 
-export const purchase = (data) =>
-  api.post("/purchase", data);
+export const purchaseViaCard = (id) =>
+  api.post(`/purchase-card/${id}`);
 
-export const purchaseViaBalance = (data) =>
-  api.post("/purchase-balance", data);
+export const purchaseViaBalance = (id) =>
+  api.post(`/purchase-balance/${id}`);
+
+export const purchaseCartViaCard = () =>
+  api.post(`/purchase-card`);
+
+export const purchaseCartViaBalance = () =>
+  api.post(`/purchase-balance`);

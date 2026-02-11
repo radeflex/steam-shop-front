@@ -5,8 +5,8 @@ import {
   getCart,
   updateQuantity,
   removeFromCart,
-  purchase,
-  purchaseViaBalance
+  purchaseCartViaBalance,
+  purchaseCartViaCard
 } from "../api/cart.api";
 
 import CartCard from "../components/CartCard";
@@ -57,17 +57,10 @@ export default function CartPage() {
     try {
       setBuyLoading(true);
 
-      const products = {};
-      items.forEach((i) => {
-        products[i.productId] = i.quantity;
-      });
-
-      const payload = { products };
-
       const res =
         type === "BALANCE"
-          ? await purchaseViaBalance(payload)
-          : await purchase(payload);
+          ? await purchaseCartViaBalance()
+          : await purchaseCartViaCard();
 
       setShowPaymentModal(false);
 

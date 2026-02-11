@@ -103,7 +103,6 @@ export default function AdminProductFormPage() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             required
-            maxLength={500}
             rows={4}
           ></textarea>
           {errors.description && <div className="invalid-feedback">{errors.description}</div>}
